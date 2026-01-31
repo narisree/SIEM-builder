@@ -1,0 +1,59 @@
+{
+  "data_model": "Network_Traffic",
+  "description": "Network traffic and connection events",
+  "constraints": {
+    "search": "(`cim_Network_Traffic_indexes`) tag=network tag=communicate"
+  },
+  "datasets": [
+    {
+      "name": "All_Traffic",
+      "description": "All network traffic events",
+      "tags": ["network", "communicate"],
+      "fields": [
+        {"name": "_time", "type": "timestamp", "flag": "inherited", "requirement": "required", "description": "The time of the event"},
+        {"name": "host", "type": "string", "flag": "inherited", "requirement": "required", "description": "The host that generated the event"},
+        {"name": "source", "type": "string", "flag": "inherited", "requirement": "required", "description": "The source of the event"},
+        {"name": "sourcetype", "type": "string", "flag": "inherited", "requirement": "required", "description": "The sourcetype of the event"},
+        {"name": "action", "type": "string", "flag": "calculated", "requirement": "required", "prescribed_values": ["allowed", "blocked", "dropped", "teardown"], "description": "The action taken by the network device"},
+        {"name": "bytes", "type": "number", "flag": "calculated", "requirement": "optional", "description": "Total bytes transferred"},
+        {"name": "bytes_in", "type": "number", "flag": "calculated", "requirement": "optional", "description": "Bytes received"},
+        {"name": "bytes_out", "type": "number", "flag": "calculated", "requirement": "optional", "description": "Bytes sent"},
+        {"name": "dest", "type": "string", "flag": "calculated", "requirement": "required", "description": "The destination IP address or hostname"},
+        {"name": "dest_port", "type": "number", "flag": "calculated", "requirement": "recommended", "description": "The destination port"},
+        {"name": "dvc", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The device generating the event"},
+        {"name": "packets", "type": "number", "flag": "calculated", "requirement": "optional", "description": "Total packets transferred"},
+        {"name": "packets_in", "type": "number", "flag": "calculated", "requirement": "optional", "description": "Packets received"},
+        {"name": "packets_out", "type": "number", "flag": "calculated", "requirement": "optional", "description": "Packets sent"},
+        {"name": "rule", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The firewall rule applied"},
+        {"name": "src", "type": "string", "flag": "calculated", "requirement": "required", "description": "The source IP address or hostname"},
+        {"name": "src_port", "type": "number", "flag": "calculated", "requirement": "recommended", "description": "The source port"},
+        {"name": "transport", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The network transport protocol (tcp, udp, icmp)"},
+        {"name": "user", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The user associated with the traffic"},
+        {"name": "vendor_product", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The vendor and product that generated the event"},
+        {"name": "app", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The application associated with the traffic"},
+        {"name": "dest_interface", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The destination interface"},
+        {"name": "dest_ip", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The destination IP address"},
+        {"name": "dest_mac", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The destination MAC address"},
+        {"name": "dest_translated_ip", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The NAT translated destination IP"},
+        {"name": "dest_translated_port", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The NAT translated destination port"},
+        {"name": "dest_zone", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The destination zone"},
+        {"name": "direction", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The direction of the traffic (inbound, outbound)"},
+        {"name": "duration", "type": "number", "flag": "extracted", "requirement": "optional", "description": "Duration of the network session in seconds"},
+        {"name": "icmp_code", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The ICMP code"},
+        {"name": "icmp_type", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The ICMP type"},
+        {"name": "protocol", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The application layer protocol"},
+        {"name": "session_id", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The session ID"},
+        {"name": "src_interface", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The source interface"},
+        {"name": "src_ip", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The source IP address"},
+        {"name": "src_mac", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The source MAC address"},
+        {"name": "src_translated_ip", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The NAT translated source IP"},
+        {"name": "src_translated_port", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The NAT translated source port"},
+        {"name": "src_zone", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The source zone"},
+        {"name": "tag", "type": "string", "flag": "extracted", "requirement": "required", "description": "The tags associated with the event"},
+        {"name": "tcp_flag", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The TCP flags"},
+        {"name": "vlan", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The VLAN ID"}
+      ]
+    }
+  ],
+  "common_sourcetypes": ["cisco:asa", "paloalto:traffic", "fortinet:firewall", "checkpoint:firewall", "netflow", "zeek:conn", "aws:cloudwatch:vpcflow"]
+}

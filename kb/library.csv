@@ -1,0 +1,160 @@
+Use case Name,Description,Log Source,MITRE Tactics,MITRE Technique,SPL 
+Azure AD High Number Of Failed Authentications From Ip,"The following analytic detects an IP address with 20 or more failed authentication attempts to an Azure AD tenant within 10 minutes. It leverages Azure AD SignInLogs to identify repeated failed logins from the same IP. This behavior is significant as it may indicate a brute force attack aimed at gaining unauthorized access or escalating privileges. If confirmed malicious, the attacker could potentially compromise user accounts, leading to unauthorized access to sensitive information and resources within the Azure environment",Azure AD,Credential Access,"Password Guessing (T1110.001) ,Password Spraying (T1110.003)","`azure_monitor_aad`
+category=SignInLogs
+properties.status.errorCode=50126
+properties.authenticationDetails{}.succeeded=false
+
+| rename properties.* as *
+
+| bin span=10m _time
+
+| fillnull value=null
+
+| stats count min(_time) as firstTime max(_time) as lastTime values(dest) as dest values(user) as user values(user_agent) as user_agent by src _time vendor_account vendor_product
+
+| where count > 20
+
+| `security_content_ctime(firstTime)`
+
+| `security_content_ctime(lastTime)`
+
+| `azure_ad_high_number_of_failed_authentications_from_ip_filter`"
+WinEvent Scheduled Task Created to Spawn Shell,"The following analytic detects the creation of scheduled tasks designed to execute commands using native Windows shells like PowerShell, Cmd, Wscript, or Cscript. It leverages Windows Security EventCode 4698 to identify when such tasks are registered. This activity is significant as it may indicate an attempt to establish persistence or execute malicious commands on a system. If confirmed malicious, this could allow an attacker to maintain access, execute arbitrary code, or escalate privileges, posing a severe threat to the environment.",Windows,Execution,Scheduled Task (T1053.005),"`wineventlog_security` EventCode=4698 TaskContent IN (""*powershell.exe*"", ""*wscript.exe*"", ""*cscript.exe*"", ""*cmd.exe*"", ""*sh.exe*"", ""*ksh.exe*"", ""*zsh.exe*"", ""*bash.exe*"", ""*scrcons.exe*"", ""*pwsh.exe*"") 
+| stats count min(_time) as firstTime max(_time) as lastTime by Computer, TaskName, TaskContent 
+| rename Computer as dest 
+| `security_content_ctime(firstTime)` 
+| `security_content_ctime(lastTime)` 
+| `winevent_scheduled_task_created_to_spawn_shell_filter`"
+Linux Auditd Change File Owner To Root,"The following analytic detects the use of the 'chown' command to change a file owner to 'root' on a Linux system. It leverages Linux Auditd telemetry, specifically monitoring command-line executions and process details. This activity is significant as it may indicate an attempt to escalate privileges by adversaries, malware, or red teamers. If confirmed malicious, this action could allow an attacker to gain root-level access, leading to full control over the compromised host and potential persistence within the environment.",Linux,Defense Evasion,Linux and Mac File and Directory Permissions Modification(T1222.002),"`linux_auditd` proctitle = ""*chown *root*"" 
+| rename host as dest 
+| stats count min(_time) as firstTime max(_time) as lastTime by proctitle dest 
+| `security_content_ctime(firstTime)` 
+| `security_content_ctime(lastTime)` 
+| `linux_auditd_change_file_owner_to_root_filter`"
+Detect Remote Access Software Usage Traffic,"The following analytic detects network traffic associated with known remote access software applications, such as AnyDesk, GoToMyPC, LogMeIn, and TeamViewer. It leverages Palo Alto traffic logs mapped to the Network_Traffic data model in Splunk. This activity is significant because adversaries often use remote access tools to maintain unauthorized access to compromised environments. If confirmed malicious, this activity could allow attackers to control systems remotely, exfiltrate data, or deploy additional malware, posing a severe threat to the organization's security.",Palo Alto,Command And Control,Remote Access Tools (T1219),"| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) as lastTime values(All_Traffic.dest_port) as dest_port latest(All_Traffic.user) as user from datamodel=Network_Traffic by All_Traffic.action All_Traffic.app All_Traffic.bytes All_Traffic.bytes_in All_Traffic.bytes_out All_Traffic.dest All_Traffic.dest_ip All_Traffic.dest_port All_Traffic.dvc All_Traffic.protocol All_Traffic.protocol_version All_Traffic.src All_Traffic.src_ip All_Traffic.src_port All_Traffic.transport All_Traffic.user All_Traffic.vendor_product 
+| `drop_dm_object_name(""All_Traffic"")` 
+| `security_content_ctime(firstTime)` 
+| `security_content_ctime(lastTime)` 
+| lookup remote_access_software remote_appid AS app OUTPUT isutility, description as signature, comment_reference as desc, category 
+| search isutility = True 
+| `remote_access_software_usage_exceptions` 
+| `detect_remote_access_software_usage_traffic_filter`"
+O365 Multiple Failed MFA Requests For User,"The following analytic identifies potential ""MFA fatigue"" attacks targeting Office 365 users by detecting more than nine Multi-Factor Authentication (MFA) prompts within a 10-minute timeframe. It leverages O365 management activity logs, focusing on Azure Active Directory events with the UserLoginFailed operation, a Success ResultStatus, and an ErrorNumber of 500121. This activity is significant as attackers may exploit MFA fatigue to gain unauthorized access by overwhelming users with repeated MFA requests. If confirmed malicious, this could lead to data breaches, unauthorized data access, or further compromise within the O365 environment. Immediate investigation is crucial.",O365,Credential Access,Multi-Factor Authentication Request Generation (T1621),"`o365_management_activity` Workload=AzureActiveDirectory Operation=UserLoginFailed ResultStatus=Success ErrorNumber=500121 
+| bucket span=10m _time 
+| stats dc(_raw) as mfa_prompts values(LogonError) as LogonError values(signature) as signature values(action) as action values(src) as src by user _time vendor_account vendor_product dest 
+| where mfa_prompts > 9 
+| `o365_multiple_failed_mfa_requests_for_user_filter`"
+Zscaler Potentially Abused File Download,"The following analytic identifies the download of potentially malicious file types, such as .scr, .dll, .bat, and .lnk, within a network. It leverages web proxy logs from Zscaler, focusing on blocked actions and analyzing fields like deviceowner, user, urlcategory, url, dest, and filename. This activity is significant as these file types are often used to spread malware, posing a threat to network security. If confirmed malicious, this activity could lead to malware execution, data compromise, or further network infiltration",Zscaler,Initial Access,Phishing (T1566),"`zscaler_proxy` url IN (""*.scr"", ""*.dll"", ""*.bat"", ""*.lnk"") 
+| stats count min(_time) as firstTime max(_time) as lastTime by deviceowner user urlcategory url src filename dest 
+| `security_content_ctime(firstTime)` 
+| `security_content_ctime(lastTime)` 
+| `zscaler_potentially_abused_file_download_filter`"
+Dump LSASS via comsvcs DLL,"The following analytic detects the behavior of dumping credentials from memory by exploiting the Local Security Authority Subsystem Service (LSASS) using the comsvcs.dll and MiniDump via rundll32. This detection leverages process information from Endpoint Detection and Response (EDR) logs, focusing on specific command-line executions. This activity is significant because it indicates potential credential theft, which can lead to broader system compromise, persistence, lateral movement, and privilege escalation. If confirmed malicious, attackers could gain unauthorized access to sensitive information, leading to data theft, ransomware attacks, or other damaging outcomes.",Crowdstrike,Credential Access,LSASS Memory (T1003.001),"| tstats `security_content_summariesonly` count min(_time) as firstTime max(_time) as lastTime from datamodel=Endpoint.Processes where `process_rundll32` Processes.process=*comsvcs.dll* Processes.process IN (""*MiniDump*"", ""*#24*"") by Processes.action Processes.dest Processes.original_file_name Processes.parent_process Processes.parent_process_exec Processes.parent_process_guid Processes.parent_process_id Processes.parent_process_name Processes.parent_process_path Processes.process Processes.process_exec Processes.process_guid Processes.process_hash Processes.process_id Processes.process_integrity_level Processes.process_name Processes.process_path Processes.user Processes.user_id Processes.vendor_product 
+| `drop_dm_object_name(Processes)` 
+| `security_content_ctime(firstTime)` 
+| `security_content_ctime(lastTime)` 
+| `dump_lsass_via_comsvcs_dll_filter`"
+Potential Data Exfiltration,"The following analytic detects potentially suspicious large outbound data transfers from internal to external networks. It leverages Cisco Secure Firewall Threat Defense logs and calculates the total volume of data exchanged per connection by summing InitiatorBytes and ResponderBytes. Connections exceeding 100 MB are flagged, as these may indicate unauthorized data exfiltration, especially if initiated by unusual users, hosts, or processes. This analytic is scoped to inside-to-outside flows using a macro (cisco_secure_firewall_inside_to_outside) to abstract environment-specific zone definitions. If confirmed malicious, this behavior may reflect data staging and exfiltration over an encrypted or stealthy transport.",Cisco ASA,Exfiltration,Exfiltration Over C2 Channel (T1041),"`cisco_secure_firewall` EventType=ConnectionEvent `cisco_secure_firewall_inside_to_outside`
+
+| eval total_bytes = InitiatorBytes + ResponderBytes
+
+| eval total_mb = round(total_bytes / 1024 / 1024, 2)
+
+| where total_mb >= 100
+
+| eval Exfiltrated = total_mb + "" MB""
+
+| stats min(_time) as firstTime max(_time) as lastTime
+    Values(url) as url
+    Values(rule) as rule
+    Values(dest_port) as dest_port
+    by src_ip, dest, Exfiltrated, transport, action
+
+| `security_content_ctime(firstTime)`
+
+| `security_content_ctime(lastTime)`
+
+| `cisco_secure_firewall___potential_data_exfiltration_filter`"
+Potential Command and Control Beaconing via Checkpoint Firewall,"Detects potential command and control (C2) beaconing activity by identifying hosts that establish repeated outbound connections to the same external destination at regular intervals. C2 beaconing is a common technique where compromised hosts periodically check in with attacker infrastructure to receive commands or exfiltrate data. This use case analyzes Checkpoint firewall logs for patterns indicative of automated, periodic communication that deviates from normal user browsing behavio",Checkpoint Firewall,Command and Control,Application Layer Protocol (T1071),"index=checkpoint sourcetype=""cp_log"" OR sourcetype=""opsec:fw1""
+action IN (""accept"", ""allow"")
+direction=""outbound""
+| eval dest_ip=coalesce(dst, dest_ip, destination_ip)
+| eval src_ip=coalesce(src, src_ip, source_ip)
+| eval dest_port=coalesce(service, dst_port, dest_port)
+| where NOT cidrmatch(""10.0.0.0/8"", dest_ip) 
+    AND NOT cidrmatch(""172.16.0.0/12"", dest_ip) 
+    AND NOT cidrmatch(""192.168.0.0/16"", dest_ip)
+| bucket _time span=1m
+| stats count AS connections_per_minute 
+        dc(_time) AS unique_minutes 
+        min(_time) AS first_seen 
+        max(_time) AS last_seen 
+        values(dest_port) AS ports_used
+        sum(bytes_out) AS total_bytes_out
+    BY src_ip, dest_ip
+| eval time_span_hours=round((last_seen - first_seen)/3600, 2)
+| where unique_minutes >= 10 AND time_span_hours >= 1
+| eval avg_interval_seconds=round((last_seen - first_seen) / unique_minutes, 0)
+| eval regularity_score=round((unique_minutes / (time_span_hours * 60)) * 100, 2)
+| where regularity_score >= 15 AND regularity_score <= 95
+| eval jitter_indicator=if(regularity_score >= 40 AND regularity_score <= 70, ""low_jitter_suspicious"", ""variable"")
+| where avg_interval_seconds >= 30 AND avg_interval_seconds <= 3600
+| eval risk_score=case(
+    regularity_score >= 60 AND unique_minutes >= 30, ""critical"",
+    regularity_score >= 40 AND unique_minutes >= 20, ""high"",
+    regularity_score >= 25, ""medium"",
+    1=1, ""low""
+)
+| table src_ip, dest_ip, ports_used, connections_per_minute, unique_minutes, 
+        time_span_hours, avg_interval_seconds, regularity_score, jitter_indicator,
+        total_bytes_out, first_seen, last_seen, risk_score
+| sort - regularity_score"
+Targeted Phishing Campaign Detection via Proofpoint Email Security,"Identifies potential targeted phishing or spear-phishing campaigns by analyzing Proofpoint email security logs for patterns where multiple users receive emails from the same sender domain or with similar characteristics (subject line patterns, attachment types, URL domains) within a short timeframe. This use case correlates email metadata to detect coordinated attacks that may bypass individual email inspection by targeting multiple recipients simultaneously with slightly varied content",Proofpoint ,Initial Access,Phishing (T1566),"index=proofpoint sourcetype=""proofpoint:pps:messagelog"" OR sourcetype=""proofpoint_tap""
+| eval sender_domain=coalesce(senderDomain, mvindex(split(sender, ""@""), -1))
+| eval threat_score=coalesce(spamScore, phishScore, malwareScore, threatsInfoMap{}.threatScore, 0)
+| eval has_attachment=if(isnotnull(attachments) OR attachmentCount > 0, 1, 0)
+| eval has_url=if(isnotnull(urls) OR urlCount > 0 OR match(subject, ""(?i)(click|verify|confirm|update|secure|login)""), 1, 0)
+| eval subject_normalized=lower(replace(subject, ""\d+"", ""N""))
+| eval subject_pattern=replace(subject_normalized, ""[a-z]{8,}"", ""WORD"")
+| bucket _time span=1h
+| stats dc(recipient) AS unique_recipients 
+        values(recipient) AS targeted_recipients
+        dc(subject) AS unique_subjects
+        values(subject) AS subjects
+        dc(sender) AS unique_senders
+        values(sender) AS senders
+        sum(has_attachment) AS emails_with_attachments
+        sum(has_url) AS emails_with_urls
+        avg(threat_score) AS avg_threat_score
+        max(threat_score) AS max_threat_score
+        values(attachmentNames) AS attachment_names
+        values(urls) AS urls_in_emails
+        count AS total_emails
+        min(_time) AS campaign_start
+        max(_time) AS campaign_end
+    BY sender_domain, subject_pattern, _time
+| where unique_recipients >= 3
+| eval attachment_ratio=round(emails_with_attachments/total_emails*100, 1)
+| eval url_ratio=round(emails_with_urls/total_emails*100, 1)
+| eval campaign_risk=case(
+    max_threat_score >= 80 AND unique_recipients >= 10, ""critical"",
+    (avg_threat_score >= 50 OR attachment_ratio >= 80) AND unique_recipients >= 5, ""high"",
+    unique_recipients >= 5 AND (has_attachment=1 OR has_url=1), ""medium"",
+    1=1, ""low""
+)
+| eval campaign_type=case(
+    attachment_ratio >= 70, ""attachment_campaign"",
+    url_ratio >= 70, ""url_phishing_campaign"",
+    1=1, ""mixed_campaign""
+)
+| eval ioc_indicators=mvappend(
+    if(match(mvjoin(subjects, "" ""), ""(?i)(urgent|immediate|action required|verify|suspend|unusual activity)""), ""urgency_language"", null()),
+    if(match(sender_domain, ""(?i)(mail\d|secure-|update-|verify-)""), ""suspicious_domain_pattern"", null()),
+    if(match(mvjoin(attachment_names, "" ""), ""(?i)\.(exe|scr|js|vbs|hta|ps1)$""), ""dangerous_attachment"", null())
+)
+| where campaign_risk IN (""critical"", ""high"", ""medium"")
+| table campaign_start, campaign_end, sender_domain, senders, unique_recipients, 
+        targeted_recipients, subjects, total_emails, campaign_type, attachment_names,
+        urls_in_emails, avg_threat_score, max_threat_score, attachment_ratio, url_ratio,
+        ioc_indicators, campaign_risk
+| sort - campaign_risk, - unique_recipients"

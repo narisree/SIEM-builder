@@ -1,0 +1,34 @@
+{
+  "data_model": "Alerts",
+  "description": "Notable events and correlation alerts from security tools",
+  "constraints": {
+    "search": "(`cim_Alerts_indexes`) tag=alert tag=notable"
+  },
+  "datasets": [
+    {
+      "name": "Notable",
+      "description": "Notable security events and alerts",
+      "tags": ["alert", "notable"],
+      "fields": [
+        {"name": "_time", "type": "timestamp", "flag": "inherited", "requirement": "required", "description": "The time of the event"},
+        {"name": "host", "type": "string", "flag": "inherited", "requirement": "required", "description": "The host that generated the event"},
+        {"name": "source", "type": "string", "flag": "inherited", "requirement": "required", "description": "The source of the event"},
+        {"name": "sourcetype", "type": "string", "flag": "inherited", "requirement": "required", "description": "The sourcetype of the event"},
+        {"name": "signature", "type": "string", "flag": "calculated", "requirement": "required", "description": "The name of the alert or correlation rule"},
+        {"name": "severity", "type": "string", "flag": "calculated", "requirement": "required", "description": "The severity level (critical, high, medium, low, informational)"},
+        {"name": "category", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The category of the alert"},
+        {"name": "dest", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The destination system involved in the alert"},
+        {"name": "src", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The source system involved in the alert"},
+        {"name": "user", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The user involved in the alert"},
+        {"name": "description", "type": "string", "flag": "extracted", "requirement": "optional", "description": "A detailed description of the alert"},
+        {"name": "mitre_technique_id", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The MITRE ATT&CK technique ID"},
+        {"name": "mitre_tactic", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The MITRE ATT&CK tactic"},
+        {"name": "risk_score", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The risk score associated with the alert"},
+        {"name": "signature_id", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The unique identifier of the alert rule"},
+        {"name": "status", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The status of the alert (new, in progress, resolved, closed)"},
+        {"name": "tag", "type": "string", "flag": "extracted", "requirement": "required", "description": "The tags associated with the event"}
+      ]
+    }
+  ],
+  "common_sourcetypes": ["stash", "notable", "ess_notable", "siem:alert", "correlation:alert"]
+}

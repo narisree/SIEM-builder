@@ -1,0 +1,47 @@
+{
+  "data_model": "Web",
+  "description": "Web server and proxy traffic events",
+  "constraints": {
+    "search": "(`cim_Web_indexes`) tag=web"
+  },
+  "datasets": [
+    {
+      "name": "Web",
+      "description": "Web traffic events",
+      "tags": ["web"],
+      "fields": [
+        {"name": "_time", "type": "timestamp", "flag": "inherited", "requirement": "required", "description": "The time of the event"},
+        {"name": "host", "type": "string", "flag": "inherited", "requirement": "required", "description": "The host that generated the event"},
+        {"name": "source", "type": "string", "flag": "inherited", "requirement": "required", "description": "The source of the event"},
+        {"name": "sourcetype", "type": "string", "flag": "inherited", "requirement": "required", "description": "The sourcetype of the event"},
+        {"name": "action", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The action taken by the web server or proxy"},
+        {"name": "bytes", "type": "number", "flag": "calculated", "requirement": "optional", "description": "Total bytes transferred"},
+        {"name": "bytes_in", "type": "number", "flag": "calculated", "requirement": "optional", "description": "Bytes received by the server"},
+        {"name": "bytes_out", "type": "number", "flag": "calculated", "requirement": "optional", "description": "Bytes sent by the server"},
+        {"name": "dest", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The destination IP address of the web server"},
+        {"name": "http_content_type", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The HTTP content type"},
+        {"name": "http_method", "type": "string", "flag": "calculated", "requirement": "required", "description": "The HTTP method (GET, POST, PUT, DELETE, etc.)"},
+        {"name": "http_referrer", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The HTTP referrer"},
+        {"name": "http_user_agent", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The HTTP user agent string"},
+        {"name": "src", "type": "string", "flag": "calculated", "requirement": "required", "description": "The source IP address of the client"},
+        {"name": "status", "type": "string", "flag": "calculated", "requirement": "required", "description": "The HTTP status code"},
+        {"name": "url", "type": "string", "flag": "calculated", "requirement": "required", "description": "The URL requested"},
+        {"name": "url_domain", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The domain portion of the URL"},
+        {"name": "user", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The authenticated user"},
+        {"name": "vendor_product", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The vendor and product that generated the event"},
+        {"name": "app", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The application"},
+        {"name": "cached", "type": "boolean", "flag": "extracted", "requirement": "optional", "description": "Whether the response was cached"},
+        {"name": "category", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The URL category"},
+        {"name": "cookie", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The HTTP cookie"},
+        {"name": "dest_port", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The destination port"},
+        {"name": "duration", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The duration of the request"},
+        {"name": "response_time", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The response time in milliseconds"},
+        {"name": "site", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The site name"},
+        {"name": "tag", "type": "string", "flag": "extracted", "requirement": "required", "description": "The tags associated with the event"},
+        {"name": "url_path", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The path portion of the URL"},
+        {"name": "url_query", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The query string portion of the URL"}
+      ]
+    }
+  ],
+  "common_sourcetypes": ["access_combined", "iis", "nginx:access", "squid", "bluecoat:proxysg:access", "zscaler:web"]
+}

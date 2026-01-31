@@ -1,0 +1,34 @@
+{
+  "data_model": "Databases",
+  "description": "Database query and operation events",
+  "constraints": {
+    "search": "(`cim_Databases_indexes`) tag=database"
+  },
+  "datasets": [
+    {
+      "name": "Queries",
+      "description": "Database query events",
+      "tags": ["database", "query"],
+      "fields": [
+        {"name": "_time", "type": "timestamp", "flag": "inherited", "requirement": "required", "description": "The time of the event"},
+        {"name": "host", "type": "string", "flag": "inherited", "requirement": "required", "description": "The host that generated the event"},
+        {"name": "source", "type": "string", "flag": "inherited", "requirement": "required", "description": "The source of the event"},
+        {"name": "sourcetype", "type": "string", "flag": "inherited", "requirement": "required", "description": "The sourcetype of the event"},
+        {"name": "action", "type": "string", "flag": "calculated", "requirement": "required", "description": "The database action performed (select, insert, update, delete, etc.)"},
+        {"name": "dest", "type": "string", "flag": "calculated", "requirement": "required", "description": "The database server"},
+        {"name": "user", "type": "string", "flag": "calculated", "requirement": "required", "description": "The database user"},
+        {"name": "src", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The source system making the database query"},
+        {"name": "vendor_product", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The vendor and product that generated the event"},
+        {"name": "database_name", "type": "string", "flag": "extracted", "requirement": "recommended", "description": "The name of the database"},
+        {"name": "duration", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The duration of the query in milliseconds"},
+        {"name": "object", "type": "string", "flag": "extracted", "requirement": "recommended", "description": "The database object (table, view, procedure)"},
+        {"name": "query", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The SQL query executed"},
+        {"name": "rows_affected", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The number of rows affected"},
+        {"name": "rows_returned", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The number of rows returned"},
+        {"name": "status", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The status of the query (success, failure)"},
+        {"name": "tag", "type": "string", "flag": "extracted", "requirement": "required", "description": "The tags associated with the event"}
+      ]
+    }
+  ],
+  "common_sourcetypes": ["oracle:audit", "mssql:audit", "mysql:audit", "postgresql:audit", "mongodb:audit"]
+}

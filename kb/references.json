@@ -1,0 +1,249 @@
+{
+  "palo_alto": {
+    "official_docs": [
+      {
+        "title": "Splunk Add-on for Palo Alto Networks - Splunkbase",
+        "url": "https://splunkbase.splunk.com/app/2757"
+      },
+      {
+        "title": "Palo Alto Networks - Configure Syslog Monitoring",
+        "url": "https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-admin/monitoring/use-syslog-for-monitoring/configure-syslog-monitoring"
+      },
+      {
+        "title": "Palo Alto Networks - Log Forwarding",
+        "url": "https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-admin/monitoring/configure-log-forwarding"
+      }
+    ],
+    "youtube": [
+      {
+        "title": "How to Send Palo Alto Firewall Logs to Splunk",
+        "url": "https://www.youtube.com/watch?v=53PUy4zhG8Q"
+      },
+      {
+        "title": "Palo Alto Log Forwarding to Syslog Server",
+        "url": "https://www.youtube.com/watch?v=LNL5qEBakKM"
+      }
+    ],
+    "blogs_optional": [
+      {
+        "title": "Palo Alto Splunk Universal Forwarder Documentation",
+        "url": "https://pan.dev/splunk/docs/universal-forwarder/"
+      }
+    ]
+  },
+  "windows_events": {
+    "official_docs": [
+      {
+        "title": "Splunk Add-on for Windows - Splunkbase",
+        "url": "https://splunkbase.splunk.com/app/742"
+      },
+      {
+        "title": "Install the Universal Forwarder on Windows",
+        "url": "https://docs.splunk.com/Documentation/Forwarder/latest/Forwarder/InstallaWindowsuniversalforwarderfromaninstaller"
+      },
+      {
+        "title": "Monitor Windows Event Logs",
+        "url": "https://docs.splunk.com/Documentation/Splunk/latest/Data/MonitorWindowseventlogdata"
+      }
+    ],
+    "youtube": [
+      {
+        "title": "Installing Splunk Universal Forwarder on Windows",
+        "url": "https://www.youtube.com/watch?v=splunk-uf-windows"
+      },
+      {
+        "title": "Windows Event Log Collection with Splunk",
+        "url": "https://www.youtube.com/watch?v=windows-splunk-events"
+      }
+    ],
+    "blogs_optional": [
+      {
+        "title": "Windows Security Event Log Best Practices",
+        "url": "https://community.splunk.com/t5/All-Apps-and-Add-ons/bd-p/all-apps"
+      }
+    ]
+  },
+  "linux": {
+    "official_docs": [
+      {
+        "title": "Splunk Add-on for Unix and Linux - Splunkbase",
+        "url": "https://splunkbase.splunk.com/app/833"
+      },
+      {
+        "title": "Install Universal Forwarder on Linux",
+        "url": "https://docs.splunk.com/Documentation/Forwarder/latest/Forwarder/Installanixuniversalforwarder"
+      }
+    ],
+    "youtube": [
+      {
+        "title": "Linux Log Collection with Splunk Universal Forwarder",
+        "url": "https://www.youtube.com/watch?v=linux-splunk-uf"
+      }
+    ],
+    "blogs_optional": []
+  },
+  "azure_ad": {
+    "official_docs": [
+      {
+        "title": "Splunk Add-on for Microsoft Cloud Services - Splunkbase",
+        "url": "https://splunkbase.splunk.com/app/3110"
+      },
+      {
+        "title": "Microsoft Entra ID Activity Logs",
+        "url": "https://learn.microsoft.com/en-us/entra/identity/monitoring-health/concept-audit-logs"
+      },
+      {
+        "title": "Stream Azure AD logs to SIEM",
+        "url": "https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub"
+      }
+    ],
+    "youtube": [
+      {
+        "title": "Azure AD Integration with Splunk - Step by Step",
+        "url": "https://www.youtube.com/watch?v=azure-ad-splunk"
+      },
+      {
+        "title": "Microsoft Graph API for SIEM Integration",
+        "url": "https://www.youtube.com/watch?v=msgraph-siem"
+      }
+    ],
+    "blogs_optional": [
+      {
+        "title": "Azure AD Security Monitoring with Splunk",
+        "url": "https://techcommunity.microsoft.com/t5/security-compliance-and-identity/bg-p/SecurityandComplianceBlog"
+      }
+    ]
+  },
+  "cisco_asa": {
+    "official_docs": [
+      {
+        "title": "Splunk Add-on for Cisco ASA - Splunkbase",
+        "url": "https://splunkbase.splunk.com/app/1620"
+      },
+      {
+        "title": "Cisco ASA Syslog Configuration Guide",
+        "url": "https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/S/asa-command-ref-S.html"
+      }
+    ],
+    "youtube": [
+      {
+        "title": "Cisco ASA Syslog to Splunk Configuration",
+        "url": "https://www.youtube.com/watch?v=cisco-asa-splunk"
+      }
+    ],
+    "blogs_optional": []
+  },
+  "checkpoint": {
+    "official_docs": [
+      {
+        "title": "Splunk Add-on for Check Point - Splunkbase",
+        "url": "https://splunkbase.splunk.com/app/4293"
+      },
+      {
+        "title": "Check Point Log Exporter Guide",
+        "url": "https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&solutionid=sk122323"
+      }
+    ],
+    "youtube": [
+      {
+        "title": "Check Point OPSEC LEA Integration with Splunk",
+        "url": "https://www.youtube.com/watch?v=checkpoint-splunk"
+      }
+    ],
+    "blogs_optional": []
+  },
+  "crowdstrike_edr": {
+    "official_docs": [
+      {
+        "title": "CrowdStrike Falcon Event Streams - Splunkbase",
+        "url": "https://splunkbase.splunk.com/app/5082"
+      },
+      {
+        "title": "CrowdStrike API Documentation",
+        "url": "https://falcon.crowdstrike.com/documentation/page/a2a7fc0e/crowdstrike-falcon-event-streams-api"
+      }
+    ],
+    "youtube": [
+      {
+        "title": "CrowdStrike Falcon + Splunk Integration",
+        "url": "https://www.youtube.com/watch?v=crowdstrike-splunk"
+      }
+    ],
+    "blogs_optional": [
+      {
+        "title": "CrowdStrike SIEM Integration Best Practices",
+        "url": "https://www.crowdstrike.com/blog/"
+      }
+    ]
+  },
+  "o365": {
+    "official_docs": [
+      {
+        "title": "Splunk Add-on for Microsoft Office 365 - Splunkbase",
+        "url": "https://splunkbase.splunk.com/app/4055"
+      },
+      {
+        "title": "Microsoft 365 Audit Log Activities",
+        "url": "https://learn.microsoft.com/en-us/purview/audit-log-activities"
+      },
+      {
+        "title": "Office 365 Management Activity API",
+        "url": "https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference"
+      }
+    ],
+    "youtube": [
+      {
+        "title": "Office 365 Log Collection with Splunk",
+        "url": "https://www.youtube.com/watch?v=o365-splunk-logs"
+      }
+    ],
+    "blogs_optional": []
+  },
+  "proofpoint": {
+    "official_docs": [
+      {
+        "title": "Splunk Add-on for Proofpoint - Splunkbase",
+        "url": "https://splunkbase.splunk.com/app/3638"
+      },
+      {
+        "title": "Proofpoint TAP SIEM API Documentation",
+        "url": "https://help.proofpoint.com/Threat_Insight_Dashboard/API_Documentation"
+      }
+    ],
+    "youtube": [
+      {
+        "title": "Proofpoint Email Security + Splunk Integration",
+        "url": "https://www.youtube.com/watch?v=proofpoint-splunk"
+      }
+    ],
+    "blogs_optional": []
+  },
+  "zscaler_proxy": {
+    "official_docs": [
+      {
+        "title": "Splunk Add-on for Zscaler - Splunkbase",
+        "url": "https://splunkbase.splunk.com/app/3865"
+      },
+      {
+        "title": "Zscaler NSS Configuration Guide",
+        "url": "https://help.zscaler.com/zia/nss-feed-output-format-web-logs"
+      },
+      {
+        "title": "Zscaler Cloud NSS Documentation",
+        "url": "https://help.zscaler.com/zia/about-cloud-nss"
+      }
+    ],
+    "youtube": [
+      {
+        "title": "Zscaler ZIA Integration with Splunk SIEM",
+        "url": "https://www.youtube.com/watch?v=zscaler-splunk"
+      }
+    ],
+    "blogs_optional": [
+      {
+        "title": "Zscaler + Splunk Security Operations",
+        "url": "https://www.zscaler.com/blogs"
+      }
+    ]
+  }
+}

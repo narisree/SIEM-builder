@@ -1,0 +1,36 @@
+{
+  "data_model": "Intrusion_Detection",
+  "description": "IDS/IPS alerts and network security events",
+  "constraints": {
+    "search": "(`cim_Intrusion_Detection_indexes`) tag=ids tag=attack"
+  },
+  "datasets": [
+    {
+      "name": "IDS_Attacks",
+      "description": "Intrusion detection system alerts",
+      "tags": ["ids", "attack"],
+      "fields": [
+        {"name": "_time", "type": "timestamp", "flag": "inherited", "requirement": "required", "description": "The time of the event"},
+        {"name": "host", "type": "string", "flag": "inherited", "requirement": "required", "description": "The host that generated the event"},
+        {"name": "source", "type": "string", "flag": "inherited", "requirement": "required", "description": "The source of the event"},
+        {"name": "sourcetype", "type": "string", "flag": "inherited", "requirement": "required", "description": "The sourcetype of the event"},
+        {"name": "category", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The category of the attack"},
+        {"name": "dest", "type": "string", "flag": "calculated", "requirement": "required", "description": "The destination IP address"},
+        {"name": "dvc", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The device that detected the attack"},
+        {"name": "ids_type", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The type of IDS (network, host)"},
+        {"name": "severity", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The severity level of the alert"},
+        {"name": "signature", "type": "string", "flag": "calculated", "requirement": "required", "description": "The name of the IDS signature"},
+        {"name": "src", "type": "string", "flag": "calculated", "requirement": "required", "description": "The source IP address of the attack"},
+        {"name": "user", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The user associated with the event"},
+        {"name": "vendor_product", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The IDS/IPS product"},
+        {"name": "action", "type": "string", "flag": "extracted", "requirement": "required", "description": "The action taken (allowed, blocked, dropped)"},
+        {"name": "dest_port", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The destination port"},
+        {"name": "signature_id", "type": "string", "flag": "extracted", "requirement": "recommended", "description": "The unique identifier of the signature"},
+        {"name": "src_port", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The source port"},
+        {"name": "tag", "type": "string", "flag": "extracted", "requirement": "required", "description": "The tags associated with the event"},
+        {"name": "transport", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The transport protocol (tcp, udp, icmp)"}
+      ]
+    }
+  ],
+  "common_sourcetypes": ["snort", "suricata", "paloalto:threat", "checkpoint:ids", "fortinet:ips", "zeek:notice"]
+}

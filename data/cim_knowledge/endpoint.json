@@ -1,0 +1,64 @@
+{
+  "data_model": "Endpoint",
+  "description": "Endpoint processes, services, registry, and filesystem events",
+  "constraints": {
+    "search": "(`cim_Endpoint_indexes`) tag=endpoint"
+  },
+  "datasets": [
+    {
+      "name": "Processes",
+      "description": "Process creation and termination events",
+      "tags": ["process", "report"],
+      "fields": [
+        {"name": "_time", "type": "timestamp", "flag": "inherited", "requirement": "required", "description": "The time of the event"},
+        {"name": "host", "type": "string", "flag": "inherited", "requirement": "required", "description": "The host that generated the event"},
+        {"name": "source", "type": "string", "flag": "inherited", "requirement": "required", "description": "The source of the event"},
+        {"name": "sourcetype", "type": "string", "flag": "inherited", "requirement": "required", "description": "The sourcetype of the event"},
+        {"name": "action", "type": "string", "flag": "calculated", "requirement": "required", "description": "The action performed (created, terminated, blocked)"},
+        {"name": "dest", "type": "string", "flag": "calculated", "requirement": "required", "description": "The endpoint where the process ran"},
+        {"name": "process", "type": "string", "flag": "calculated", "requirement": "required", "description": "The name of the process"},
+        {"name": "process_id", "type": "number", "flag": "extracted", "requirement": "recommended", "description": "The numeric identifier of the process"},
+        {"name": "process_path", "type": "string", "flag": "extracted", "requirement": "recommended", "description": "The full path to the process executable"},
+        {"name": "process_exec", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The executable name of the process"},
+        {"name": "process_hash", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The hash of the process executable"},
+        {"name": "parent_process", "type": "string", "flag": "extracted", "requirement": "recommended", "description": "The name of the parent process"},
+        {"name": "parent_process_id", "type": "number", "flag": "extracted", "requirement": "recommended", "description": "The process ID of the parent process"},
+        {"name": "parent_process_path", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The full path to the parent process"},
+        {"name": "user", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The user context of the process"},
+        {"name": "command_line", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The command line used to launch the process"},
+        {"name": "tag", "type": "string", "flag": "extracted", "requirement": "required", "description": "The tags associated with the event"}
+      ]
+    },
+    {
+      "name": "Filesystem",
+      "description": "File creation, modification, and deletion events",
+      "tags": ["endpoint", "filesystem"],
+      "fields": [
+        {"name": "action", "type": "string", "flag": "calculated", "requirement": "required", "description": "The action performed on the file (created, modified, deleted, accessed)"},
+        {"name": "dest", "type": "string", "flag": "calculated", "requirement": "required", "description": "The endpoint where the file operation occurred"},
+        {"name": "file_name", "type": "string", "flag": "extracted", "requirement": "required", "description": "The name of the file"},
+        {"name": "file_path", "type": "string", "flag": "extracted", "requirement": "required", "description": "The full path to the file"},
+        {"name": "file_hash", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The hash of the file"},
+        {"name": "file_size", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The size of the file in bytes"},
+        {"name": "user", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The user who performed the file operation"},
+        {"name": "process", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The process that performed the file operation"}
+      ]
+    },
+    {
+      "name": "Registry",
+      "description": "Windows registry modification events",
+      "tags": ["endpoint", "registry"],
+      "fields": [
+        {"name": "action", "type": "string", "flag": "calculated", "requirement": "required", "description": "The action performed on the registry (created, modified, deleted)"},
+        {"name": "dest", "type": "string", "flag": "calculated", "requirement": "required", "description": "The endpoint where the registry change occurred"},
+        {"name": "registry_path", "type": "string", "flag": "extracted", "requirement": "required", "description": "The full registry path"},
+        {"name": "registry_key_name", "type": "string", "flag": "extracted", "requirement": "recommended", "description": "The registry key name"},
+        {"name": "registry_value_name", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The registry value name"},
+        {"name": "registry_value_data", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The registry value data"},
+        {"name": "user", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The user who made the registry change"},
+        {"name": "process", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The process that made the registry change"}
+      ]
+    }
+  ],
+  "common_sourcetypes": ["WinEventLog:Security", "WinEventLog:Sysmon", "osquery", "carbonblack", "crowdstrike:fdr", "linux:audit"]
+}

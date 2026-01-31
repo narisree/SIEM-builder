@@ -1,0 +1,37 @@
+{
+  "data_model": "Email",
+  "description": "Email delivery, filtering, and content inspection events",
+  "constraints": {
+    "search": "(`cim_Email_indexes`) tag=email"
+  },
+  "datasets": [
+    {
+      "name": "All_Email",
+      "description": "All email events",
+      "tags": ["email"],
+      "fields": [
+        {"name": "_time", "type": "timestamp", "flag": "inherited", "requirement": "required", "description": "The time of the event"},
+        {"name": "host", "type": "string", "flag": "inherited", "requirement": "required", "description": "The host that generated the event"},
+        {"name": "source", "type": "string", "flag": "inherited", "requirement": "required", "description": "The source of the event"},
+        {"name": "sourcetype", "type": "string", "flag": "inherited", "requirement": "required", "description": "The sourcetype of the event"},
+        {"name": "action", "type": "string", "flag": "calculated", "requirement": "required", "description": "The action taken on the email (delivered, blocked, quarantined, deferred)"},
+        {"name": "dest", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The destination mail server"},
+        {"name": "recipient", "type": "string", "flag": "calculated", "requirement": "required", "description": "The recipient email address"},
+        {"name": "recipient_count", "type": "number", "flag": "calculated", "requirement": "optional", "description": "The number of recipients"},
+        {"name": "src", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The source mail server or IP"},
+        {"name": "src_user", "type": "string", "flag": "calculated", "requirement": "required", "description": "The sender email address"},
+        {"name": "vendor_product", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The vendor and product"},
+        {"name": "file_hash", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The hash of email attachments"},
+        {"name": "file_name", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The name of email attachments"},
+        {"name": "file_size", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The size of attachments"},
+        {"name": "message_id", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The unique message identifier"},
+        {"name": "protocol", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The email protocol (SMTP, IMAP, POP3)"},
+        {"name": "size", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The size of the email in bytes"},
+        {"name": "subject", "type": "string", "flag": "extracted", "requirement": "recommended", "description": "The email subject line"},
+        {"name": "tag", "type": "string", "flag": "extracted", "requirement": "required", "description": "The tags associated with the event"},
+        {"name": "url", "type": "string", "flag": "extracted", "requirement": "optional", "description": "URLs found in the email"}
+      ]
+    }
+  ],
+  "common_sourcetypes": ["ms:exchange", "proofpoint:tap", "mimecast", "ironport:mail", "o365:management:activity"]
+}

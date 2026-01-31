@@ -1,0 +1,10 @@
+# Core Framework
+streamlit>=1.28.0
+requests>=2.31.0
+
+# AI Providers
+anthropic>=0.18.0
+
+# CIM Mapper Dependencies
+chromadb>=0.4.0
+sentence-transformers>=2.2.0

@@ -1,0 +1,35 @@
+{
+  "data_model": "Network_Resolution",
+  "description": "DNS queries and responses",
+  "constraints": {
+    "search": "(`cim_Network_Resolution_indexes`) tag=network tag=resolution tag=dns"
+  },
+  "datasets": [
+    {
+      "name": "DNS",
+      "description": "DNS query and response events",
+      "tags": ["network", "resolution", "dns"],
+      "fields": [
+        {"name": "_time", "type": "timestamp", "flag": "inherited", "requirement": "required", "description": "The time of the event"},
+        {"name": "host", "type": "string", "flag": "inherited", "requirement": "required", "description": "The host that generated the event"},
+        {"name": "source", "type": "string", "flag": "inherited", "requirement": "required", "description": "The source of the event"},
+        {"name": "sourcetype", "type": "string", "flag": "inherited", "requirement": "required", "description": "The sourcetype of the event"},
+        {"name": "answer", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The DNS response (resolved IP or value)"},
+        {"name": "dest", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The DNS server IP"},
+        {"name": "message_type", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The type of DNS message (Query or Response)"},
+        {"name": "query", "type": "string", "flag": "calculated", "requirement": "required", "description": "The DNS query (domain name requested)"},
+        {"name": "reply_code", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The DNS reply code (NOERROR, NXDOMAIN, etc.)"},
+        {"name": "vendor_product", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The vendor and product that generated the event"},
+        {"name": "record_type", "type": "string", "flag": "extracted", "requirement": "recommended", "description": "The DNS record type (A, AAAA, CNAME, MX, TXT, etc.)"},
+        {"name": "response_time", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The DNS response time in milliseconds"},
+        {"name": "src", "type": "string", "flag": "extracted", "requirement": "recommended", "description": "The source IP making the DNS query"},
+        {"name": "src_port", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The source port"},
+        {"name": "tag", "type": "string", "flag": "extracted", "requirement": "required", "description": "The tags associated with the event"},
+        {"name": "transaction_id", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The DNS transaction ID"},
+        {"name": "transport", "type": "string", "flag": "extracted", "requirement": "optional", "description": "The transport protocol (udp, tcp)"},
+        {"name": "ttl", "type": "number", "flag": "extracted", "requirement": "optional", "description": "The time-to-live value"}
+      ]
+    }
+  ],
+  "common_sourcetypes": ["stream:dns", "zeek:dns", "infoblox:dns", "bind:query", "windows:dns:server"]
+}

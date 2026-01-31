@@ -1,0 +1,37 @@
+{
+  "data_model": "Change",
+  "description": "Change events including object creation, deletion, modification, and access control changes",
+  "constraints": {
+    "search": "(`cim_Change_indexes`) tag=change NOT (object_category=file OR object_category=directory OR object_category=registry)"
+  },
+  "datasets": [
+    {
+      "name": "All_Changes",
+      "description": "All change events",
+      "tags": ["change"],
+      "fields": [
+        {"name": "_time", "type": "timestamp", "flag": "inherited", "requirement": "required", "description": "The time of the event"},
+        {"name": "host", "type": "string", "flag": "inherited", "requirement": "required", "description": "The host that generated the event"},
+        {"name": "source", "type": "string", "flag": "inherited", "requirement": "required", "description": "The source of the event"},
+        {"name": "sourcetype", "type": "string", "flag": "inherited", "requirement": "required", "description": "The sourcetype of the event"},
+        {"name": "action", "type": "string", "flag": "calculated", "requirement": "required", "prescribed_values": ["acl_modified", "cleared", "created", "deleted", "modified", "stopped", "lockout", "read", "logoff", "updated", "started", "restarted", "unlocked"], "description": "The action performed on the resource"},
+        {"name": "change_type", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The type of change performed"},
+        {"name": "command", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The command that was executed"},
+        {"name": "dest", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The destination system where the change occurred"},
+        {"name": "dvc", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The device where the change occurred"},
+        {"name": "object", "type": "string", "flag": "calculated", "requirement": "required", "description": "The object that was changed"},
+        {"name": "object_attrs", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The attributes of the object that were changed"},
+        {"name": "object_category", "type": "string", "flag": "calculated", "requirement": "recommended", "description": "The category of the object that was changed"},
+        {"name": "object_id", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The ID of the object that was changed"},
+        {"name": "object_path", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The path of the object that was changed"},
+        {"name": "result", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The result of the change"},
+        {"name": "src", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The source of the change request"},
+        {"name": "status", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The status of the change"},
+        {"name": "user", "type": "string", "flag": "calculated", "requirement": "required", "description": "The user that performed the change"},
+        {"name": "vendor_product", "type": "string", "flag": "calculated", "requirement": "optional", "description": "The vendor and product that generated the event"},
+        {"name": "tag", "type": "string", "flag": "extracted", "requirement": "required", "description": "The tags associated with the event"}
+      ]
+    }
+  ],
+  "common_sourcetypes": ["WinEventLog:Security", "linux_audit", "osquery", "aws:cloudtrail", "azure:audit", "o365:management:activity"]
+}
