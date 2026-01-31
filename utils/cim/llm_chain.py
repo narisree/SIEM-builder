@@ -3,6 +3,7 @@ LLM-based CIM Mapping Chain
 Uses the shared AI client from the main app
 """
 import re
+import json
 from typing import Dict, List, Optional
 from utils.cim.log_parser import ParsedLog
 from utils.cim.vector_store import CIMVectorStore
@@ -35,6 +36,10 @@ CRITICAL INSTRUCTION: You MUST check the '[FLAG: ...]' for each CIM field in the
 
 NEVER use 'Alias' for a field marked as [FLAG: CALCULATED].
 NEVER use 'Eval' for a field marked as [FLAG: EXTRACTED] unless you are actually transforming the value (e.g. lower()).
+
+CRITICAL: The 'Raw Field' in your output MUST be exactly one of the known field names derived from the Log Format (listed below in 'DETECTED FIELDS').
+NEVER use a sample value (like an IP address "192.168.1.1" or timestamp) as a field name. 
+Structure your output so that the Raw Field is always the NAME of the field.
 """
 
 CIM_MAPPING_USER_PROMPT = """Analyze the following log data and provide CIM mappings.
@@ -44,8 +49,11 @@ VENDOR: {vendor}
 PRODUCT: {product}
 CONFIDENCE: {format_confidence}
 
-DETECTED FIELDS:
+DETECTED FIELDS (These are the ONLY valid Raw Field names you can use):
 {field_list}
+
+VENDOR DOCUMENTATION:
+{vendor_docs}
 
 SAMPLE LOG EVENTS:
 {sample_events}
@@ -160,7 +168,7 @@ class CIMMappingChain:
         
         return context_header + "\n".join(context_parts)
     
-    def analyze(self, parsed_log: ParsedLog) -> Dict:
+    def analyze(self, parsed_log: ParsedLog, vendor_docs: Optional[str] = None) -> Dict:
         """Analyze parsed log and generate CIM mappings."""
         if not self.ai_client:
             return {
@@ -175,8 +183,8 @@ class CIMMappingChain:
         
         # Format field list
         field_list = "\n".join([
-            f"- {field_name} (sample values: {', '.join(list(set(values))[:3])})"
-            for field_name, values in list(parsed_log.fields.items())[:20]
+            f"- Field Name: \"{field_name}\" | Samples: {json.dumps(list(set(values))[:3])}"
+            for field_name, values in list(parsed_log.fields.items())[:25]
         ])
         
         # Format sample events
@@ -196,7 +204,8 @@ class CIMMappingChain:
             format_confidence=f"{parsed_log.confidence:.0%}",
             field_list=field_list,
             sample_events=sample_events,
-            cim_context=cim_context
+            cim_context=cim_context,
+            vendor_docs=vendor_docs[:2000] if vendor_docs else "No vendor documentation provided."
         )
         
         # Build KB content for the AI client

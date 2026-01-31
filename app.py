@@ -240,6 +240,8 @@ with tab4:
         with col2:
             sourcetype_name = st.text_input("Sourcetype Name", placeholder="my_logs")
         
+        vendor_doc_file = st.file_uploader("Upload Vendor Documentation (Optional)", type=["txt", "md", "pdf"])
+        
         if uploaded_file and sourcetype_name:
             file_content = uploaded_file.read()
             
@@ -289,7 +291,27 @@ with tab4:
                         with st.spinner("Generating CIM mappings..."):
                             try:
                                 mapping_chain = create_mapping_chain(vector_store, st.session_state.ai_client)
-                                result = mapping_chain.analyze(parsed_log)
+                                
+                                # Read vendor doc if available
+                                vendor_doc_content = None
+                                if vendor_doc_file:
+                                    try:
+                                        if vendor_doc_file.type == "application/pdf":
+                                            # Simple PDF text extraction (if pypdf is available, otherwise just warn)
+                                            try:
+                                                import pypdf
+                                                pdf_reader = pypdf.PdfReader(vendor_doc_file)
+                                                vendor_doc_content = ""
+                                                for page in pdf_reader.pages:
+                                                    vendor_doc_content += page.extract_text()
+                                            except ImportError:
+                                                st.warning("pypdf not installed. Upload text/md files for best results.")
+                                        else:
+                                            vendor_doc_content = vendor_doc_file.read().decode('utf-8', errors='ignore')
+                                    except Exception as e:
+                                        st.warning(f"Could not read vendor doc: {e}")
+
+                                result = mapping_chain.analyze(parsed_log, vendor_docs=vendor_doc_content)
                                 
                                 if result['success']:
                                     st.success("✅ CIM Mapping Generated!")
