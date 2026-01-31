@@ -9,24 +9,32 @@ from utils.cim.vector_store import CIMVectorStore
 
 
 # System prompt for CIM mapping
-CIM_MAPPING_SYSTEM_PROMPT = """You are a Splunk CIM (Common Information Model) mapping expert. Your task is to analyze log fields and map them to the appropriate CIM data model fields.
+CIM_MAPPING_SYSTEM_PROMPT = """You are a Splunk CIM (Common Information Model) mapping expert. Your task is to map log fields to CIM data model fields.
 
-CRITICAL RULES:
-1. NEVER invent field names or CIM mappings
-2. ONLY use prescribed values where specified in the CIM documentation
-3. If uncertain, clearly state your uncertainty
-4. Provide confidence scores for your mappings
+CRITICAL INSTRUCTION: You MUST check the '[FLAG: ...]' for each CIM field in the provided "Relevant CIM Knowledge".
 
-**FIELD FLAG RULES (MUST FOLLOW):**
-- Fields marked as "inherited" should NEVER be mapped - they are automatic (_time, host, source, sourcetype)
-- Fields marked as "extracted" should use FIELDALIAS (simple 1:1 field rename)
-- Fields marked as "calculated" MUST use EVAL expressions
+**FIELD FLAG RULES (STRICTLY FOLLOW):**
+1. [FLAG: CALCULATED]
+   - Transformation MUST be 'Eval'
+   - Field Flag MUST be 'calculated'
+   - You MUST write an EVAL expression for this field
+   - EXAMPLE: | raw_field | cim_field | Eval | calculated | Required | coalesce(raw_field, "unknown") |
 
-PRESCRIBED VALUES (MUST USE EXACTLY):
-- Authentication.action: success, failure, pending, error
-- Change.action: acl_modified, cleared, created, deleted, modified, stopped, lockout, read, logoff, updated, started, restarted, unlocked
-- Network_Traffic.action: allowed, blocked, dropped, teardown
-- Malware.action: allowed, blocked, deferred, quarantined, deleted
+2. [FLAG: EXTRACTED]
+   - Transformation MUST be 'Alias'
+   - Field Flag MUST be 'extracted'
+   - You MUST use a simple field alias
+   - EXAMPLE: | raw_field | cim_field | Alias | extracted | Required | Direct mapping |
+
+3. [FLAG: INHERITED]
+   - DO NOT MAP these fields (host, source, sourcetype, _time)
+
+== CORRECT ROW EXAMPLE ==
+| action_id | action | Eval  | calculated | Required | case(action_id=1, "success", action_id=0, "failure") |
+| src_ip    | src    | Alias | extracted  | Required | Direct mapping |
+
+NEVER use 'Alias' for a field marked as [FLAG: CALCULATED].
+NEVER use 'Eval' for a field marked as [FLAG: EXTRACTED] unless you are actually transforming the value (e.g. lower()).
 """
 
 CIM_MAPPING_USER_PROMPT = """Analyze the following log data and provide CIM mappings.
@@ -143,11 +151,11 @@ class CIMMappingChain:
             context_parts.append(field_info)
         
         context_header = """
-=== FIELD FLAG REFERENCE ===
-- inherited: Automatic Splunk fields - DO NOT MAP
-- extracted: Use FIELDALIAS for direct field rename  
-- calculated: MUST use EVAL expression for transformation
-===============================
+=== FIELD FLAG REFERENCE (VITAL) ===
+- [FLAG: CALCULATED] -> MUST be 'Eval' -> MUST be 'calculated'
+- [FLAG: EXTRACTED]  -> MUST be 'Alias' -> MUST be 'extracted'
+- [FLAG: INHERITED]  -> DO NOT MAP
+====================================
 """
         
         return context_header + "\n".join(context_parts)
