@@ -54,6 +54,7 @@ DETECTED FIELDS (These are the ONLY valid Raw Field names you can use):
 
 VENDOR DOCUMENTATION:
 {vendor_docs}
+(Note: This documentation might contain unrelated text. FOCUS ONLY on log field definitions, schema details, and example events.)
 
 SAMPLE LOG EVENTS:
 {sample_events}

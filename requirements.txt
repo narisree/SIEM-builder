@@ -8,3 +8,4 @@ anthropic>=0.18.0
 # CIM Mapper Dependencies
 chromadb>=0.4.0
 sentence-transformers>=2.2.0
+pypdf>=3.0.0
