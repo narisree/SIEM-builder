@@ -4,7 +4,9 @@ Uses the shared AI client from the main app
 """
 import re
 import json
-from typing import Dict, List, Optional
+import re
+import json
+from typing import Dict, List, Optional, Tuple
 from utils.cim.log_parser import ParsedLog
 from utils.cim.vector_store import CIMVectorStore
 
@@ -225,10 +227,17 @@ class CIMMappingChain:
                 confidence = self._extract_confidence(result_text)
                 data_model = self._extract_data_model(result_text)
                 dataset = self._extract_dataset(result_text)
+                # Repair mapping (fix values -> keys)
+                repaired_mapping, repair_notes = self._repair_mapping(result_text, parsed_log)
+                
+                confidence = self._extract_confidence(repaired_mapping)
+                data_model = self._extract_data_model(repaired_mapping)
+                dataset = self._extract_dataset(repaired_mapping)
                 
                 return {
                     "success": True,
-                    "mapping": result_text,
+                    "mapping": repaired_mapping,
+                    "repair_notes": repair_notes,
                     "confidence": confidence,
                     "data_model": data_model,
                     "dataset": dataset,
@@ -276,6 +285,52 @@ class CIMMappingChain:
         if match:
             return match.group(1).strip()
         return None
+
+    def _repair_mapping(self, mapping_text: str, parsed_log: ParsedLog) -> Tuple[str, List[str]]:
+        """
+        Post-process the LLM output to fix common hallucinations.
+        Specifically, replaces field VALUES (e.g., '192.168.1.1') with field NAMES (e.g., 'src_ip').
+        """
+        repair_notes = []
+        
+        # Create a Value -> Field Name map
+        # We handle string representations of values
+        value_to_field = {}
+        for field_name, values in parsed_log.fields.items():
+            for val in values:
+                # Normalization for matching (strip quotes, lowercase if reasonable, but standard string match is safest)
+                # We map the string representation of the value to the field name
+                v_str = str(val).strip('"').strip("'")
+                if len(v_str) > 1: # Avoid mapping single chars which might be risky
+                    value_to_field[v_str] = field_name
+        
+        # Regex to find table rows: | raw_val | cim_field | ...
+        # We capture the line and the first cell content
+        def replace_row(match):
+            full_line = match.group(0)
+            raw_content = match.group(1).strip()
+            
+            # If the raw content is already a valid field name, do nothing
+            if raw_content in parsed_log.fields:
+                return full_line
+            
+            # If it's a known value, swap it
+            clean_raw = raw_content.strip('"').strip("'")
+            if clean_raw in value_to_field:
+                correct_field = value_to_field[clean_raw]
+                repair_notes.append(f"Repaired: '{raw_content}' -> '{correct_field}'")
+                # Rebuild the line with the correct field name
+                # We replace the first occurrence of the raw content in the line
+                return full_line.replace(raw_content, correct_field, 1)
+            
+            return full_line
+
+        # Pattern matches a markdown table row starts with | 
+        # Group 1 is the content of the first cell
+        # We look for lines that look like field mappings
+        repaired_text = re.sub(r'^\|\s*([^|]+?)\s*\|', replace_row, mapping_text, flags=re.MULTILINE)
+        
+        return repaired_text, repair_notes
 
 
 def create_mapping_chain(vector_store: CIMVectorStore, ai_client=None) -> CIMMappingChain:
